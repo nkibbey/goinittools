@@ -21,10 +21,20 @@ RUN go install github.com/josharian/impl@latest
 # RUN go install github.com/haya14busa/goplay@latest -- only for running on goplayground
 
 # proto
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+# RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN go install -x google.golang.org/protobuf/...@latest
 
+# mqtt
+RUN go install github.com/eclipse/paho.mqtt.golang/...@latest
 
+# 
 # RUN go get package google.golang.org/protobuf@latest
 
+COPY main.go /go/src/clienttest/main.go
+WORKDIR /go/src/clienttest
+RUN go mod init clienttest
+RUN go get -u 
+RUN go mod tidy
+
 # vscode
-ENTRYPOINT  goproxy server --address localhost:8080
+ENTRYPOINT  goproxy server --address :8080 --connect-timeout 1ms --fetch-timeout 1ms
